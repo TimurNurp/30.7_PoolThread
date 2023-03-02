@@ -1,19 +1,25 @@
 #include "RequestHandler.h"
+#include <iostream>
 
 // функция, выполняющая задачу
 void taskFunc(int id, int delay){
+   std::mutex coutLocker;
    // имитируем время выполнения задачи
-   this_thread::sleep_for(chrono::seconds(delay));
+   std::this_thread::sleep_for(std::chrono::seconds(delay));
    // выводим информацию о завершении
-   unique_lock<mutex> l(coutLocker);
-   cout << "task " << id << " made by thread_id " << this_thread::get_id() << endl;
+   std::unique_lock<std::mutex> l(coutLocker);
+   std::cout << "task " << id << " made by thread_id " << std::this_thread::get_id() << std::endl;
 }
 
 
 int main()
 {
-    srand(0);
-    for(int i=0; i<20; i++)
-       taskFunc(i, 1 + rand()%4);
+   std::srand(0);
+   for(int i=0; i<20; i++)
+      taskFunc(i, 1 + std::rand()%4);
+      
+//unsigned int n=std::thread::hardware_concurrency();
+// std::cout << n << std::endl;
     return 0;
+
 }
