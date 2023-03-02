@@ -1,9 +1,10 @@
 #include "RequestHandler.h"
 #include <iostream>
 
+ std::mutex coutLocker;
+
 // функция, выполняющая задачу
 void taskFunc(int id, int delay){
-   std::mutex coutLocker;
    // имитируем время выполнения задачи
    std::this_thread::sleep_for(std::chrono::seconds(delay));
    // выводим информацию о завершении

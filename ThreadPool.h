@@ -1,9 +1,12 @@
+#pragma once
 #include <queue>
 #include <future>
 #include <condition_variable>
 #include <vector>
 #include <thread>
 #include <mutex>
+
+#include "BlockedQueue.h"
 
 void taskFunc(int id, int delay);
 
@@ -12,6 +15,7 @@ typedef std::function<void()> task_type;
 
 // тип указатель на функцию, которая является эталоном для функций задач
 typedef void (*FuncType) (int, int);
+
 // пул потоков
 class ThreadPool {
    public:
@@ -22,16 +26,17 @@ class ThreadPool {
        // проброс задач
        void push_task(FuncType f, int id, int arg);
        // функция входа для потока
-       void threadFunc();
+       void threadFunc(int qindex);
+
+       ThreadPool();
    private:
+          // количество потоков
+       int m_thread_count;
        // потоки
        std::vector<std::thread> m_threads;
-       // поддержка синхронизации очереди
-       std::mutex m_locker;
-       // очередь задач
-       std::queue<task_type> m_task_queue;
-       // для синхронизации работы потоков
-       std::condition_variable m_event_holder;
-       // флаг для остановки работы потоков
-       volatile bool m_work;
+       // очереди задач для потоков
+       std::vector<BlockedQueue<task_type>> m_thread_queues;
+       // для равномерного распределения задач
+       int m_index;
 };
+
